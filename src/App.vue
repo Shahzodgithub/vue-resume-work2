@@ -1,26 +1,57 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div>
+    <app-add-info></app-add-info>
+    <div class="container">
+      <p>
+        <button class="btn primary" @click="getPosts" v-if="got">
+          Загрузить комментарии
+        </button>
+      </p>
+      <div class="loader" v-if="loading"></div>
+      <app-comments :posts="posts" v-else></app-comments>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-
+import AppAddInfo from "./components/AppAddInfo.vue";
+import AppComments from "./components/AppComments.vue";
 export default {
-  name: "App",
+  data() {
+    return {
+      loading: false,
+      posts: null,
+      got: true,
+    };
+  },
   components: {
-    HelloWorld
-  }
+    AppAddInfo,
+    AppComments,
+  },
+  methods: {
+    async getPosts() {
+      this.loading = true;
+      const res = await fetch(
+        "https://jsonplaceholder.typicode.com/comments?_limit=42"
+      );
+      this.posts = await res.json();
+
+      this.got = false;
+      this.loading = false;
+    },
+  },
 };
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style>
+.avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 150px;
+  height: auto;
+  border-radius: 50%;
 }
 </style>
